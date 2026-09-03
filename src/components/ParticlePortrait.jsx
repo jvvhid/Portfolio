@@ -57,6 +57,12 @@ const ParticlePortrait = () => {
   const containerRef = useRef(null);
   const [isReducedMotion, setIsReducedMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isInteractive, setIsInteractive] = useState(false);
+  const isInteractiveRef = useRef(false);
+
+  useEffect(() => {
+    isInteractiveRef.current = isInteractive;
+  }, [isInteractive]);
 
   useEffect(() => {
     const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -96,8 +102,42 @@ const ParticlePortrait = () => {
       mouse.y = -1000;
     };
 
+    const handleTouchStart = (e) => {
+      setIsInteractive(true);
+      // Let the first tap pass through or just update mouse position
+      const rect = canvas.getBoundingClientRect();
+      if (e.touches.length > 0) {
+        mouse.x = e.touches[0].clientX - rect.left;
+        mouse.y = e.touches[0].clientY - rect.top;
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (isInteractiveRef.current) {
+        e.preventDefault(); // Stop page scrolling
+        const rect = canvas.getBoundingClientRect();
+        if (e.touches.length > 0) {
+          mouse.x = e.touches[0].clientX - rect.left;
+          mouse.y = e.touches[0].clientY - rect.top;
+        }
+      }
+    };
+
+    // Close interactive mode if touching outside
+    const handleGlobalTouchStart = (e) => {
+      if (canvas && !canvas.contains(e.target)) {
+        setIsInteractive(false);
+        handleMouseLeave();
+      }
+    };
+
     canvas.addEventListener('mousemove', handleMouseMove);
     canvas.addEventListener('mouseleave', handleMouseLeave);
+    
+    // Use passive: false so we can call e.preventDefault() on touchmove
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchstart', handleGlobalTouchStart, { passive: true });
 
     const init = () => {
       const parent = containerRef.current;
@@ -145,7 +185,7 @@ const ParticlePortrait = () => {
               
               if (baseBrightness > 20) {
                 // Apply a strong flat boost to compensate for text-rendering darkness
-                const boost = 1.0;
+                const boost = 1.5;
                 const finalR = Math.min(255, r * boost);
                 const finalG = Math.min(255, g * boost);
                 const finalB = Math.min(255, b * boost);
@@ -199,9 +239,12 @@ const ParticlePortrait = () => {
 
     return () => {
       window.removeEventListener('resize', init);
+      cancelAnimationFrame(animationFrameId);
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
-      cancelAnimationFrame(animationFrameId);
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchstart', handleGlobalTouchStart);
     };
   }, [isReducedMotion]);
 
@@ -214,7 +257,20 @@ const ParticlePortrait = () => {
           style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(100%)' }}
         />
       ) : (
-        <canvas ref={canvasRef} style={{ display: 'block', width: '100%', height: '100%' }} />
+        <canvas 
+          ref={canvasRef} 
+          className={isInteractive ? 'interactive-canvas' : ''}
+          style={{ 
+            display: 'block', 
+            width: '100%', 
+            height: '100%',
+            transition: 'box-shadow 0.3s ease',
+            boxShadow: isInteractive ? '0 0 30px rgba(255, 255, 255, 0.15)' : 'none',
+            zIndex: isInteractive ? 10 : 1,
+            position: 'relative',
+            cursor: isInteractive ? 'crosshair' : 'default'
+          }} 
+        />
       )}
     </div>
   );
