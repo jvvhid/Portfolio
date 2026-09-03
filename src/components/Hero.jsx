@@ -44,7 +44,7 @@ const TypewriterText = ({ texts }) => {
 
     const timer = setTimeout(() => {
       if (!isDeleting && currentText === currentFullText) {
-        setTimeout(() => setIsDeleting(true), 0);
+        setTimeout(() => setIsDeleting(true), 1000);
       } else if (isDeleting && currentText === '') {
         setIsDeleting(false);
         setCurrentTextIndex((prev) => (prev + 1) % texts.length);
@@ -116,8 +116,8 @@ const Hero = () => {
               hidden: { opacity: 0, y: 20 },
               visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
             }}
-            className="mono accent-text"
-            style={{ marginBottom: '12px', fontSize: 'clamp(28px, 5vw, 36px)' }}
+            className="accent-text"
+            style={{ marginBottom: '12px', fontSize: 'clamp(28px, 5vw, 36px)', fontWeight: 'bold' }}
           >
             I'm
           </motion.p>
@@ -127,7 +127,7 @@ const Hero = () => {
               hidden: { opacity: 0, y: 20 },
               visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
             }}
-            style={{ fontSize: 'clamp(40px, 5vw, 70px)', margin: '0 0 16px 0', letterSpacing: '-0.02em', lineHeight: 1.1 }}
+            style={{ fontSize: 'clamp(40px, 5vw, 70px)', margin: '0 0 8px 0', letterSpacing: '-0.02em', lineHeight: 1.1 }}
           >
             {profile.name}.
           </motion.h1>
@@ -138,7 +138,7 @@ const Hero = () => {
               visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
             }}
             className="text-dim"
-            style={{ fontSize: 'clamp(20px, 3vw, 32px)', margin: '0 0 32px 0', minHeight: '60px' }}
+            style={{ fontSize: 'clamp(20px, 3vw, 32px)', margin: '0 0 24px 0', minHeight: '40px' }}
           >
             <TypewriterText texts={profile.taglines} />
           </motion.h2>

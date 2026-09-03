@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion';
 
 const Reveal = ({ children }) => (
@@ -77,7 +77,46 @@ const Mosaic = () => {
   };
 
   const imageModules = import.meta.glob('../assets/favorite photos/*.webp', { eager: true });
-  const tiles = Object.values(imageModules).map(module => ({ src: module.default, onClick: setSelectedImg }));
+  
+  const [loadedTiles, setLoadedTiles] = useState([]);
+  const [colCount, setColCount] = useState(3);
+
+  useEffect(() => {
+    const arr = Object.values(imageModules).map(module => ({ src: module.default, onClick: setSelectedImg }));
+    
+    Promise.all(arr.map(item => {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.src = item.src;
+        img.onload = () => resolve({ ...item, aspectRatio: img.width / img.height });
+      });
+    })).then(tilesWithRatio => {
+       setLoadedTiles(tilesWithRatio);
+    });
+  }, []);
+
+  useEffect(() => {
+    const updateCols = () => {
+      if (window.innerWidth <= 480) setColCount(1);
+      else if (window.innerWidth <= 900) setColCount(2);
+      else setColCount(4);
+    };
+    updateCols();
+    window.addEventListener('resize', updateCols);
+    return () => window.removeEventListener('resize', updateCols);
+  }, []);
+
+  // Distribute items into columns to keep heights balanced (greedy algorithm)
+  const columns = Array.from({ length: colCount }, () => ({ height: 0, items: [] }));
+  loadedTiles.forEach(tile => {
+    let shortestCol = columns[0];
+    for (const c of columns) {
+      if (c.height < shortestCol.height) shortestCol = c;
+    }
+    shortestCol.items.push(tile);
+    // Add relative height to column (width is 1, so height is 1/aspectRatio)
+    shortestCol.height += (1 / tile.aspectRatio);
+  });
 
   return (
     <section
@@ -90,7 +129,7 @@ const Mosaic = () => {
         padding: '120px 0'
       }}
     >
-      <div style={{ maxWidth: '800px', margin: '0 auto', padding: '0 24px' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '0 24px' }}>
         <Reveal>
           <h2 style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '60px', color: 'var(--text)' }}>
             ~ myWall
@@ -100,10 +139,14 @@ const Mosaic = () => {
           <div
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="masonry-grid"
+            style={{ display: 'flex', gap: colCount === 1 ? '0' : (colCount === 2 ? '16px' : '24px'), alignItems: 'stretch' }}
           >
-            {tiles.map((tile, i) => (
-              <MosaicItem key={i} index={i} mouseX={mouseX} mouseY={mouseY} content={tile} />
+            {columns.map((col, colIndex) => (
+              <div key={colIndex} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: colCount === 1 ? '16px' : (colCount === 2 ? '16px' : '24px'), flex: 1 }}>
+                {col.items.map((tile, i) => (
+                  <MosaicItem key={i} index={i} mouseX={mouseX} mouseY={mouseY} content={tile} />
+                ))}
+              </div>
             ))}
           </div>
         </Reveal>

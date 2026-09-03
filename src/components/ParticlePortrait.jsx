@@ -123,6 +123,11 @@ const ParticlePortrait = () => {
       }
     };
 
+    const handleTouchEnd = () => {
+      handleMouseLeave();
+      setIsInteractive(false);
+    };
+
     // Close interactive mode if touching outside
     const handleGlobalTouchStart = (e) => {
       if (canvas && !canvas.contains(e.target)) {
@@ -137,6 +142,8 @@ const ParticlePortrait = () => {
     // Use passive: false so we can call e.preventDefault() on touchmove
     canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
     canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd);
+    canvas.addEventListener('touchcancel', handleTouchEnd);
     document.addEventListener('touchstart', handleGlobalTouchStart, { passive: true });
 
     const init = () => {
@@ -186,10 +193,18 @@ const ParticlePortrait = () => {
               if (baseBrightness > 20) {
                 // Use Gamma correction instead of flat boost to prevent color "burning" (clipping)
                 const gamma = 0.6; // Values < 1.0 make it brighter by lifting midtones
-                const finalR = Math.pow(r / 255, gamma) * 255;
-                const finalG = Math.pow(g / 255, gamma) * 255;
-                const finalB = Math.pow(b / 255, gamma) * 255;
-                const adjustedBrightness = Math.pow(baseBrightness / 255, gamma) * 255;
+                let finalR = Math.pow(r / 255, gamma) * 255;
+                let finalG = Math.pow(g / 255, gamma) * 255;
+                let finalB = Math.pow(b / 255, gamma) * 255;
+                let adjustedBrightness = Math.pow(baseBrightness / 255, gamma) * 255;
+
+                // Apply 1.25x contrast
+                const contrast = 1.25;
+                const applyContrast = (val) => Math.min(255, Math.max(0, ((val / 255 - 0.5) * contrast + 0.5) * 255));
+                finalR = applyContrast(finalR);
+                finalG = applyContrast(finalG);
+                finalB = applyContrast(finalB);
+                adjustedBrightness = applyContrast(adjustedBrightness);
 
                 // Edge detection
                 let isEdge = false;
@@ -244,6 +259,8 @@ const ParticlePortrait = () => {
       canvas.removeEventListener('mouseleave', handleMouseLeave);
       canvas.removeEventListener('touchstart', handleTouchStart);
       canvas.removeEventListener('touchmove', handleTouchMove);
+      canvas.removeEventListener('touchend', handleTouchEnd);
+      canvas.removeEventListener('touchcancel', handleTouchEnd);
       document.removeEventListener('touchstart', handleGlobalTouchStart);
     };
   }, [isReducedMotion]);
