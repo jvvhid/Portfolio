@@ -183,7 +183,7 @@ section {
 
   .hero-portrait-container {
     margin-top: -80px;
-    max-width: 250px;
+    max-width: 375px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -193,7 +193,7 @@ section {
   }
 
   .hero-portrait {
-    height: 50vh;
+    height: 65vh;
     top: 0;
   }
 }

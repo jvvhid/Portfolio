@@ -39,12 +39,12 @@ const TypewriterText = ({ texts }) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    const typeSpeed = isDeleting ? 50 : 100;
+    const typeSpeed = isDeleting ? 33 : 67;
     const currentFullText = texts[currentTextIndex];
 
     const timer = setTimeout(() => {
       if (!isDeleting && currentText === currentFullText) {
-        setTimeout(() => setIsDeleting(true), 2000);
+        setTimeout(() => setIsDeleting(true), 0);
       } else if (isDeleting && currentText === '') {
         setIsDeleting(false);
         setCurrentTextIndex((prev) => (prev + 1) % texts.length);
@@ -79,6 +79,7 @@ const TypewriterText = ({ texts }) => {
 };
 
 const Hero = () => {
+  const [showStatic, setShowStatic] = useState(false);
   return (
     <section id="hero" style={{ 
       minHeight: '100vh', 
@@ -106,9 +107,19 @@ const Hero = () => {
               visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
             }}
             className="mono accent-text"
-            style={{ marginBottom: '12px', fontSize: '24px' }}
+            style={{ marginBottom: '4px', fontSize: 'clamp(18px, 3vw, 24px)' }}
           >
-            Hi, my name is
+            Salam habibi,
+          </motion.p>
+          <motion.p 
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } }
+            }}
+            className="mono accent-text"
+            style={{ marginBottom: '12px', fontSize: 'clamp(28px, 5vw, 36px)' }}
+          >
+            I'm
           </motion.p>
           
           <motion.h1 
@@ -209,8 +220,35 @@ const Hero = () => {
           transition={{ duration: 1, delay: 0.5 }}
           className="hover-target hero-portrait-container"
           whileHover={{ scale: 1.05 }}
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
         >
-          <ParticlePortrait />
+          <div className="hero-portrait glow-effect" style={{ width: '100%', position: 'relative', flexGrow: 1 }}>
+            {showStatic ? (
+              <img 
+                src={heroImage} 
+                alt="Static Portrait" 
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} 
+              />
+            ) : (
+              <ParticlePortrait />
+            )}
+          </div>
+          <button 
+            onClick={() => setShowStatic(!showStatic)}
+            style={{ 
+              marginTop: '32px', 
+              marginLeft: '24px',
+              background: 'none', 
+              border: 'none', 
+              color: 'var(--text-dim)', 
+              cursor: 'pointer', 
+              fontFamily: 'var(--font-mono)', 
+              fontSize: '12px',
+              textDecoration: 'underline'
+            }}
+          >
+            {showStatic ? "Show animated version" : "want to see me?"}
+          </button>
         </motion.div>
       </div>
     </section>

@@ -184,12 +184,12 @@ const ParticlePortrait = () => {
               const baseBrightness = (r * 0.299 + g * 0.587 + b * 0.114);
               
               if (baseBrightness > 20) {
-                // Apply a strong flat boost to compensate for text-rendering darkness
-                const boost = 1.5;
-                const finalR = Math.min(255, r * boost);
-                const finalG = Math.min(255, g * boost);
-                const finalB = Math.min(255, b * boost);
-                const adjustedBrightness = Math.min(255, baseBrightness * boost);
+                // Use Gamma correction instead of flat boost to prevent color "burning" (clipping)
+                const gamma = 0.6; // Values < 1.0 make it brighter by lifting midtones
+                const finalR = Math.pow(r / 255, gamma) * 255;
+                const finalG = Math.pow(g / 255, gamma) * 255;
+                const finalB = Math.pow(b / 255, gamma) * 255;
+                const adjustedBrightness = Math.pow(baseBrightness / 255, gamma) * 255;
 
                 // Edge detection
                 let isEdge = false;
