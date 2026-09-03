@@ -51,7 +51,6 @@ const Projects = () => {
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 padding: '32px 0',
-                borderBottom: '1px solid var(--border)',
                 position: 'relative',
                 zIndex: 10
               }}

@@ -19,7 +19,7 @@ const About = () => {
       <Reveal>
         <h2 style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px' }}>
           ~ About Me
-          <div style={{ height: '1px', backgroundColor: 'var(--border)', flex: 1, opacity: 0.5 }}></div>
+          <div style={{ height: '1px', backgroundColor: 'var(--border)', flexGrow: 1, marginLeft: '16px' }}></div>
         </h2>
 
         <div style={{ maxWidth: '800px' }}>

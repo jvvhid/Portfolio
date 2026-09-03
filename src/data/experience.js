@@ -4,7 +4,7 @@ export const experience = [
     role: "Anchored at IUT 12th ICT FEST",
     company: "",
     duration: "",
-    description: "Had the Priviledge to host the IUT 12th ICT Fest Organised by IUT Computer Society"
+    description: "Had the Privilege to host the IUT 12th ICT Fest Organised by IUT Computer Society"
   },
   {
     id: 2,

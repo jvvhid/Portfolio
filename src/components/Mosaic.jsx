@@ -114,17 +114,32 @@ const Mosaic = () => {
     return () => window.removeEventListener('resize', updateCols);
   }, []);
 
-  // Distribute items into columns to keep heights balanced (greedy algorithm)
   const columns = Array.from({ length: colCount }, () => ({ height: 0, items: [] }));
-  loadedTiles.forEach(tile => {
-    let shortestCol = columns[0];
-    for (const c of columns) {
-      if (c.height < shortestCol.height) shortestCol = c;
-    }
-    shortestCol.items.push(tile);
-    // Add relative height to column (width is 1, so height is 1/aspectRatio)
-    shortestCol.height += (1 / tile.aspectRatio);
-  });
+  if (loadedTiles.length > 0) {
+    const firstTile = loadedTiles.find(t => t.src.includes('DSC08982')) || loadedTiles[0];
+    const lastTile = loadedTiles.find(t => t.src.includes('DSC08871')) || loadedTiles[loadedTiles.length - 1];
+    const middleTiles = loadedTiles.filter(t => t !== firstTile && t !== lastTile);
+
+    // Pin first tile to top-left
+    columns[0].items.push(firstTile);
+    columns[0].height += (1 / firstTile.aspectRatio);
+
+    // Reserve height for last tile in bottom-right
+    columns[colCount - 1].height += (1 / lastTile.aspectRatio);
+
+    // Distribute remaining tiles to balance heights
+    middleTiles.forEach(tile => {
+      let shortestCol = columns[0];
+      for (const c of columns) {
+        if (c.height < shortestCol.height) shortestCol = c;
+      }
+      shortestCol.items.push(tile);
+      shortestCol.height += (1 / tile.aspectRatio);
+    });
+
+    // Pin last tile to bottom-right
+    columns[colCount - 1].items.push(lastTile);
+  }
 
   return (
     <section
@@ -141,7 +156,7 @@ const Mosaic = () => {
         <Reveal>
           <h2 style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '60px', color: 'var(--text)' }}>
             ~ myWall
-            <div style={{ height: '1px', backgroundColor: 'var(--border)', flexGrow: 1, marginLeft: '16px', opacity: 0.2 }} />
+            <div style={{ height: '1px', backgroundColor: 'var(--border)', flexGrow: 1, marginLeft: '16px' }} />
           </h2>
 
           <div
