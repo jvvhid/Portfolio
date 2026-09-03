@@ -158,7 +158,7 @@ const ParticlePortrait = () => {
                   const rightA = data[index + step * 4 + 3];
                   const topA = data[index - canvas.width * step * 4 + 3];
                   const bottomA = data[index + canvas.width * step * 4 + 3];
-                  if (leftA === 0 || rightA === 0 || topA === 0 || bottomA === 0) {
+                  if (leftA < 50 || rightA < 50 || topA < 50 || bottomA < 50) {
                     isEdge = true;
                   }
                 }
