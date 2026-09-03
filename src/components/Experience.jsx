@@ -54,16 +54,16 @@ const Experience = () => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', marginBottom: '8px' }}>
                 <h3 style={{ fontSize: '22px', margin: 0 }}>
-                  {item.role} <span className="accent-text">@ {item.company}</span>
+                  {item.role} {item.company && <span className="accent-text">@ {item.company}</span>}
                 </h3>
               </div>
-              <p style={{ fontSize: '16px', color: 'var(--text-dim)', lineHeight: 1.6, marginBottom: '16px' }}>
+              <p style={{ fontSize: '16px', color: 'var(--text-dim)', lineHeight: 1.6, marginBottom: '16px', whiteSpace: 'pre-wrap' }}>
                 {item.description}
               </p>
               {item.links && item.links.length > 0 && (
                 <div style={{ display: 'flex', gap: '16px', marginTop: 'auto' }}>
                   {item.links.map((link, i) => (
-                    <a key={i} href={link.url} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: 'var(--text-dim)' }} className="hover-target">
+                    <a key={i} href={link.url} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '14px', color: 'var(--accent)', textShadow: '0 0 12px rgba(0, 106, 78, 0.6)', fontWeight: 'bold' }} className="hover-target">
                       <ExternalLink size={16} />
                       {link.label}
                     </a>

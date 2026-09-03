@@ -91,6 +91,14 @@ const Mosaic = () => {
         img.onload = () => resolve({ ...item, aspectRatio: img.width / img.height });
       });
     })).then(tilesWithRatio => {
+       // Custom sorting as requested: DSC08982 first, DSC08871 not adjacent (put it last)
+       tilesWithRatio.sort((a, b) => {
+         if (a.src.includes('DSC08982')) return -1;
+         if (b.src.includes('DSC08982')) return 1;
+         if (a.src.includes('DSC08871')) return 1;
+         if (b.src.includes('DSC08871')) return -1;
+         return a.src.localeCompare(b.src);
+       });
        setLoadedTiles(tilesWithRatio);
     });
   }, []);

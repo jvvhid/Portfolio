@@ -1,17 +1,17 @@
 export const experience = [
   {
     id: 1,
-    role: "Anchor",
-    company: "IUT 12th ICT Fest",
+    role: "Anchored at IUT 12th ICT FEST",
+    company: "",
     duration: "",
-    description: "Anchored the IUT 12th ICT Fest."
+    description: "Had the Priviledge to host the IUT 12th ICT Fest Organised by IUT Computer Society"
   },
   {
     id: 2,
     role: "Freelance Photographer",
-    company: "Self-Employed",
+    company: "",
     duration: "",
-    description: "Providing professional photography services for events and portraits.",
+    description: "\nProviding professional photography services for events and portraits.",
     links: [
       {
         label: "Photography Event Covers",

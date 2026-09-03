@@ -1,6 +1,6 @@
 export const profile = {
   name: "JAHID",
-  identity: "A man chasing lights, frames, stories and code worth debugging.",
+  identity: "A man chasing frames, stories and code worth debugging.",
   taglines: [
     "photographer",
     "undergrad cse engineer",

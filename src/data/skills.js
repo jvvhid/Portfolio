@@ -1,7 +1,7 @@
 export const skills = [
   {
     category: "Languages",
-    items: ["C", "C++", "SQL"]
+    items: ["C", "C++", "Java", "SQL"]
   },
   {
     category: "Tools",
