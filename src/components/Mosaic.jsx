@@ -53,7 +53,7 @@ const MosaicItem = ({ index, mouseX, mouseY, content }) => {
       }}
       className="hover-target masonry-item"
     >
-      <img src={content.src} alt="myWall item" loading="lazy" style={{ width: '100%', height: 'auto', display: 'block' }} />
+      <img src={content.src} alt="myWall item" style={{ width: '100%', height: 'auto', display: 'block' }} />
     </motion.div>
   );
 };
