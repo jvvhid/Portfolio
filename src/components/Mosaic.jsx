@@ -76,7 +76,7 @@ const Mosaic = () => {
     mouseY.set(-100);
   };
 
-  const imageModules = import.meta.glob('../assets/favorite photos/*.jpg', { eager: true });
+  const imageModules = import.meta.glob('../assets/favorite photos/*.webp', { eager: true });
   const tiles = Object.values(imageModules).map(module => ({ src: module.default, onClick: setSelectedImg }));
 
   return (

@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { createNoise3D } from 'simplex-noise';
-import profileImage from '../assets/web.png';
+import profileImage from '../assets/web.webp';
 
 const DENSITY = ' .:-=+*#%@';
 

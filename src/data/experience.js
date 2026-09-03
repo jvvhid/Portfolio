@@ -26,7 +26,7 @@ export const awards = [
     id: 1,
     title: "Pronoia Exhibition 2026",
     prize: "1st Runners Up",
-    image: "2026pronoia awarrd.jpg"
+    image: "2026pronoia awarrd.webp"
   },
   {
     id: 2,
@@ -45,6 +45,6 @@ export const awards = [
     id: 3,
     title: "Pronoia Exhibition 2025",
     prize: "2nd Runners Up",
-    image: "2025award.jpg"
+    image: "2025award.webp"
   }
 ];

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { experience, awards } from '../data/experience';
 import { ExternalLink } from 'lucide-react';
-import award2025 from '../assets/2025award.jpg';
-import award2026 from '../assets/2026pronoia awarrd.jpg';
+import award2025 from '../assets/2025award.webp';
+import award2026 from '../assets/2026pronoia awarrd.webp';
 
 const YoutubeIcon = ({ size }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -27,8 +27,8 @@ const Experience = () => {
   const [selectedImg, setSelectedImg] = useState(null);
 
   const awardImages = {
-    "2025award.jpg": award2025,
-    "2026pronoia awarrd.jpg": award2026
+    "2025award.webp": award2025,
+    "2026pronoia awarrd.webp": award2026
   };
 
   return (

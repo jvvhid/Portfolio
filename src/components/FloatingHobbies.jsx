@@ -1,9 +1,9 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-import cameraImg from '../assets/hobbies/camera.jpg';
-import bikeImg from '../assets/hobbies/bike.jpg';
-import pcImg from '../assets/hobbies/pc.jpg';
+import cameraImg from '../assets/hobbies/camera.webp';
+import bikeImg from '../assets/hobbies/bike.webp';
+import pcImg from '../assets/hobbies/pc.webp';
 
 const FloatingHobbies = () => {
   const { scrollYProgress } = useScroll();
