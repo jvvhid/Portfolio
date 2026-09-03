@@ -44,6 +44,7 @@ const Achievements = () => {
                   <img 
                     src={item.image} 
                     alt={item.title} 
+                    loading="lazy"
                     onClick={() => setZoomedImage(item.image)}
                     className="hover-target"
                     style={{ 

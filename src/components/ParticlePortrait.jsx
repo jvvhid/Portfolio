@@ -30,9 +30,9 @@ class Particle {
     let directionX = forceDirectionX * force * 5;
     let directionY = forceDirectionY * force * 5;
 
-    // Perlin noise flow field
-    let noiseVal = noise3D(this.baseX * 0.005, this.baseY * 0.005, time * 0.001);
-    let angle = noiseVal * Math.PI * 2;
+    // Simple wave flow field (much faster than 3D noise)
+    let waveVal = Math.sin(this.baseX * 0.01 + time * 0.001) * Math.cos(this.baseY * 0.01 + time * 0.001);
+    let angle = waveVal * Math.PI * 2;
     let flowX = Math.cos(angle) * 0.5;
     let flowY = Math.sin(angle) * 0.5;
 
@@ -126,9 +126,9 @@ const ParticlePortrait = () => {
         const data = imageData.data;
         
         particles = [];
-        const step = 5; // Smaller step for much higher resolution
+        const step = 7; // Medium step for good performance
         
-        ctx.font = '7px "IBM Plex Mono", monospace';
+        ctx.font = '9px "IBM Plex Mono", monospace';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
 
