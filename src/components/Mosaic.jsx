@@ -91,12 +91,12 @@ const Mosaic = () => {
         img.onload = () => resolve({ ...item, aspectRatio: img.width / img.height });
       });
     })).then(tilesWithRatio => {
-       // Custom sorting as requested: DSC08982 first, DSC08871 not adjacent (put it last)
+       // Custom sorting as requested: DSC6077 first, DSC6316 not adjacent (put it last)
        tilesWithRatio.sort((a, b) => {
-         if (a.src.includes('DSC08982')) return -1;
-         if (b.src.includes('DSC08982')) return 1;
-         if (a.src.includes('DSC08871')) return 1;
-         if (b.src.includes('DSC08871')) return -1;
+         if (a.src.includes('DSC6077')) return -1;
+         if (b.src.includes('DSC6077')) return 1;
+         if (a.src.includes('DSC6316')) return 1;
+         if (b.src.includes('DSC6316')) return -1;
          return a.src.localeCompare(b.src);
        });
        setLoadedTiles(tilesWithRatio);
@@ -116,8 +116,8 @@ const Mosaic = () => {
 
   const columns = Array.from({ length: colCount }, () => ({ height: 0, items: [] }));
   if (loadedTiles.length > 0) {
-    const firstTile = loadedTiles.find(t => t.src.includes('DSC08982')) || loadedTiles[0];
-    const lastTile = loadedTiles.find(t => t.src.includes('DSC08871')) || loadedTiles[loadedTiles.length - 1];
+    const firstTile = loadedTiles.find(t => t.src.includes('DSC6077')) || loadedTiles[0];
+    const lastTile = loadedTiles.find(t => t.src.includes('DSC6316')) || loadedTiles[loadedTiles.length - 1];
     const middleTiles = loadedTiles.filter(t => t !== firstTile && t !== lastTile);
 
     // Pin first tile to top-left
