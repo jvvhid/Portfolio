@@ -186,6 +186,7 @@ section {
     max-width: 375px;
     margin-left: auto;
     margin-right: auto;
+    order: -1;
   }
 
   .hero-socials {

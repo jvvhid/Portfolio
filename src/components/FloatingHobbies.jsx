@@ -1,13 +1,13 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-import cameraImg from '../assets/hobbies/camera.webp';
-import bikeImg from '../assets/hobbies/bike.webp';
-import pcImg from '../assets/hobbies/pc.webp';
+import cameraImg from "../assets/hobbies/camera.webp";
+import bikeImg from "../assets/hobbies/bike.webp";
+import pcImg from "../assets/hobbies/pc.webp";
 
 const FloatingHobbies = () => {
   const { scrollYProgress } = useScroll();
-  
+
   // Parallax effects tied to scroll for the entire container
   const containerY = useTransform(scrollYProgress, [0, 1], [0, -200]);
 
@@ -41,7 +41,7 @@ const FloatingHobbies = () => {
           }
         `}
       </style>
-      <motion.div 
+      <motion.div
         className="floating-hobbies"
         style={{
           position: 'fixed',
@@ -61,7 +61,7 @@ const FloatingHobbies = () => {
         <motion.div animate={floatingAnimation(0)}>
           <img src={cameraImg} alt="Camera" style={baseImageStyle} />
         </motion.div>
-        
+
         <motion.div animate={floatingAnimation(2)}>
           <img src={bikeImg} alt="Bike" style={baseImageStyle} />
         </motion.div>
