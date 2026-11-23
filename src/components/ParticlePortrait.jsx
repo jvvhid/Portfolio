@@ -146,98 +146,146 @@ const ParticlePortrait = () => {
     canvas.addEventListener('touchcancel', handleTouchEnd);
     document.addEventListener('touchstart', handleGlobalTouchStart, { passive: true });
 
+    // Preload the image once so init() never waits on the network
+    const img = new Image();
+    img.src = profileImage;
+
     const init = () => {
       const parent = containerRef.current;
-      canvas.width = parent.clientWidth;
-      canvas.height = parent.clientHeight;
+      if (!parent) return;
+
+      const w = parent.clientWidth;
+      const h = parent.clientHeight;
+
+      // Guard: skip if layout hasn't settled yet (0-sized container)
+      if (w === 0 || h === 0) return;
+
+      canvas.width = w;
+      canvas.height = h;
+
+      // If the image isn't decoded yet, wait for it
+      if (!img.complete || img.naturalWidth === 0) return;
+
+      // Draw image to offscreen canvas to get pixel data
+      const offscreen = document.createElement('canvas');
+      const offCtx = offscreen.getContext('2d', { willReadFrequently: true });
       
-      const img = new Image();
-      img.src = profileImage;
-      img.onload = () => {
-        // Draw image to offscreen canvas to get pixel data
-        const offscreen = document.createElement('canvas');
-        const offCtx = offscreen.getContext('2d', { willReadFrequently: true });
-        
-        // Scale image to fit canvas while maintaining aspect ratio
-        const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
-        const drawWidth = img.width * scale;
-        const drawHeight = img.height * scale;
-        const offsetX = (canvas.width - drawWidth) / 2;
-        const offsetY = (canvas.height - drawHeight) / 2;
+      // Scale image to fit canvas while maintaining aspect ratio (zoomed in 15% to crop more of the top)
+      const scale = Math.max(w / img.width, h / img.height) * 1.15;
+      const drawWidth = img.width * scale;
+      const drawHeight = img.height * scale;
+      const offsetX = (w - drawWidth) / 2;
+      const offsetY = h - drawHeight;
 
-        offscreen.width = canvas.width;
-        offscreen.height = canvas.height;
-        offCtx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-        
-        const imageData = offCtx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        
-        particles = [];
-        const step = 7; // Medium step for good performance
-        
-        ctx.font = '9px "IBM Plex Mono", monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
+      offscreen.width = w;
+      offscreen.height = h;
+      offCtx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+      
+      const imageData = offCtx.getImageData(0, 0, w, h);
+      const data = imageData.data;
+      
+      particles = [];
+      const step = 7; // Medium step for good performance
+      
+      ctx.font = '9px "IBM Plex Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
 
-        for (let y = 0; y < canvas.height; y += step) {
-          for (let x = 0; x < canvas.width; x += step) {
-            const index = (y * canvas.width + x) * 4;
-            const r = data[index];
-            const g = data[index + 1];
-            const b = data[index + 2];
-            const a = data[index + 3];
+      for (let y = 0; y < h; y += step) {
+        for (let x = 0; x < w; x += step) {
+          const index = (y * w + x) * 4;
+          const r = data[index];
+          const g = data[index + 1];
+          const b = data[index + 2];
+          const a = data[index + 3];
+          
+          if (a > 0) {
+            const baseBrightness = (r * 0.299 + g * 0.587 + b * 0.114);
             
-            if (a > 0) {
-              const baseBrightness = (r * 0.299 + g * 0.587 + b * 0.114);
-              
-              if (baseBrightness > 20) {
-                // Use Gamma correction instead of flat boost to prevent color "burning" (clipping)
-                const gamma = 0.6; // Values < 1.0 make it brighter by lifting midtones
-                let finalR = Math.pow(r / 255, gamma) * 255;
-                let finalG = Math.pow(g / 255, gamma) * 255;
-                let finalB = Math.pow(b / 255, gamma) * 255;
-                let adjustedBrightness = Math.pow(baseBrightness / 255, gamma) * 255;
+            if (baseBrightness > 20) {
+              // Use Gamma correction instead of flat boost to prevent color "burning" (clipping)
+              const gamma = 0.6; // Values < 1.0 make it brighter by lifting midtones
+              let finalR = Math.pow(r / 255, gamma) * 255;
+              let finalG = Math.pow(g / 255, gamma) * 255;
+              let finalB = Math.pow(b / 255, gamma) * 255;
+              let adjustedBrightness = Math.pow(baseBrightness / 255, gamma) * 255;
 
-                // Apply 1.25x contrast
-                const contrast = 1.25;
-                const applyContrast = (val) => Math.min(255, Math.max(0, ((val / 255 - 0.5) * contrast + 0.5) * 255));
-                finalR = applyContrast(finalR);
-                finalG = applyContrast(finalG);
-                finalB = applyContrast(finalB);
-                adjustedBrightness = applyContrast(adjustedBrightness);
+              // Apply 1.25x contrast
+              const contrast = 1.25;
+              const applyContrast = (val) => Math.min(255, Math.max(0, ((val / 255 - 0.5) * contrast + 0.5) * 255));
+              finalR = applyContrast(finalR);
+              finalG = applyContrast(finalG);
+              finalB = applyContrast(finalB);
+              adjustedBrightness = applyContrast(adjustedBrightness);
 
-                // Edge detection
-                let isEdge = false;
-                if (x >= step && x < canvas.width - step && y >= step && y < canvas.height - step) {
-                  const leftA = data[index - step * 4 + 3];
-                  const rightA = data[index + step * 4 + 3];
-                  const topA = data[index - canvas.width * step * 4 + 3];
-                  const bottomA = data[index + canvas.width * step * 4 + 3];
-                  if (leftA < 50 || rightA < 50 || topA < 50 || bottomA < 50) {
-                    isEdge = true;
-                  }
+              // Edge detection
+              let isEdge = false;
+              if (x >= step && x < w - step && y >= step && y < h - step) {
+                const leftA = data[index - step * 4 + 3];
+                const rightA = data[index + step * 4 + 3];
+                const topA = data[index - w * step * 4 + 3];
+                const bottomA = data[index + w * step * 4 + 3];
+                if (leftA < 50 || rightA < 50 || topA < 50 || bottomA < 50) {
+                  isEdge = true;
                 }
-
-                let charIndex = Math.floor((adjustedBrightness / 255) * (DENSITY.length - 1));
-                let char = DENSITY[charIndex];
-                let finalColor = `rgba(${Math.floor(finalR)}, ${Math.floor(finalG)}, ${Math.floor(finalB)}, ${a/255})`;
-
-                if (isEdge) {
-                  char = '#';
-                  finalColor = 'rgba(255, 255, 255, 0.9)'; // White border
-                }
-                
-                particles.push(new Particle(x, y, char, finalColor));
               }
+
+              let charIndex = Math.floor((adjustedBrightness / 255) * (DENSITY.length - 1));
+              let char = DENSITY[charIndex];
+              let finalColor = `rgba(${Math.floor(finalR)}, ${Math.floor(finalG)}, ${Math.floor(finalB)}, ${a/255})`;
+
+              if (isEdge) {
+                char = '#';
+                finalColor = 'rgba(255, 255, 255, 0.9)'; // White border
+              }
+              
+              particles.push(new Particle(x, y, char, finalColor));
             }
           }
         }
-      };
+      }
     };
 
-    init();
+    // Wait for both image decode AND layout to settle before first init
+    const startWhenReady = () => {
+      const parent = containerRef.current;
+      if (!parent) return;
 
-    window.addEventListener('resize', init);
+      const tryInit = () => {
+        if (parent.clientWidth > 0 && parent.clientHeight > 0) {
+          init();
+          // Only start animation loop once particles exist
+          if (particles.length > 0 && !animationFrameId) {
+            animate(0);
+          }
+        }
+      };
+
+      // Use ResizeObserver to detect when the container actually has dimensions
+      const ro = new ResizeObserver(() => {
+        tryInit();
+      });
+      ro.observe(parent);
+
+      // Also try immediately in case layout is already settled
+      tryInit();
+
+      return ro;
+    };
+
+    let ro;
+    if (img.complete && img.naturalWidth > 0) {
+      ro = startWhenReady();
+    } else {
+      img.onload = () => {
+        ro = startWhenReady();
+      };
+    }
+
+    const handleResize = () => {
+      init();
+    };
+    window.addEventListener('resize', handleResize);
 
     const animate = (time) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -249,11 +297,10 @@ const ParticlePortrait = () => {
       
       animationFrameId = requestAnimationFrame(animate);
     };
-    
-    animate(0);
 
     return () => {
-      window.removeEventListener('resize', init);
+      if (ro) ro.disconnect();
+      window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseleave', handleMouseLeave);
