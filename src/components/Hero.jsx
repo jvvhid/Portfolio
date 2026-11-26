@@ -81,13 +81,7 @@ const TypewriterText = ({ texts }) => {
 const Hero = () => {
   const [showStatic, setShowStatic] = useState(false);
   return (
-    <section id="hero" style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center',
-      position: 'relative',
-      paddingTop: '6vh' // Moved entire section up slightly
-    }}>
+    <section id="hero" className="hero-section">
       <div className="hero-grid">
         <motion.div
           className="hero-text-container"
@@ -223,15 +217,21 @@ const Hero = () => {
           style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
         >
           <div className="hero-portrait glow-effect" style={{ width: '100%', position: 'relative', flexGrow: 1 }}>
-            {showStatic ? (
-              <img 
-                src={heroImage} 
-                alt="Static Portrait" 
-                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px' }} 
-              />
-            ) : (
+            {/* Always mount both — toggle visibility so ParticlePortrait never unmounts/remounts */}
+            <img 
+              src={heroImage} 
+              alt="Static Portrait" 
+              style={{ 
+                width: '100%', height: '100%', objectFit: 'cover', borderRadius: '12px',
+                display: showStatic ? 'block' : 'none'
+              }} 
+            />
+            <div style={{ 
+              width: '100%', height: '100%',
+              display: showStatic ? 'none' : 'block'
+            }}>
               <ParticlePortrait />
-            )}
+            </div>
           </div>
           <button 
             onClick={() => setShowStatic(!showStatic)}

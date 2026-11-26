@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { createNoise3D } from 'simplex-noise';
 import profileImage from '../assets/web.webp';
 
 const DENSITY = ' .:-=+*#%@';
@@ -16,7 +15,7 @@ class Particle {
     this.vy = 0;
   }
 
-  update(mouse, noise3D, time) {
+  update(mouse, time) {
     // Calculate distance to mouse
     let dx = mouse.x - this.x;
     let dy = mouse.y - this.y;
@@ -56,7 +55,6 @@ const ParticlePortrait = () => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const [isReducedMotion, setIsReducedMotion] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const [isInteractive, setIsInteractive] = useState(false);
   const isInteractiveRef = useRef(false);
 
@@ -87,7 +85,7 @@ const ParticlePortrait = () => {
     const ctx = canvas.getContext('2d');
     let animationFrameId;
     let particles = [];
-    const noise3D = createNoise3D();
+
     
     let mouse = { x: -1000, y: -1000 };
     
@@ -291,7 +289,7 @@ const ParticlePortrait = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       particles.forEach(p => {
-        p.update(mouse, noise3D, time);
+        p.update(mouse, time);
         p.draw(ctx);
       });
       
